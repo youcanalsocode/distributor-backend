@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy.orm import relationship
 from database import Base
 
 class Product(Base):
@@ -17,3 +18,5 @@ class Product(Base):
 
     unit = Column(String)
     image_url = Column(String)
+
+    category = relationship("Category", back_populates="products")

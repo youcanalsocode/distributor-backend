@@ -16,7 +16,7 @@ def get_db():
         db.close()
 
 
-@router.post("/")
+@router.post("/", response_model=schemas.Product)
 def create_product(product: schemas.ProductCreate, db: Session = Depends(get_db)):
 
     new_product = models.Product(**product.dict())
@@ -28,13 +28,13 @@ def create_product(product: schemas.ProductCreate, db: Session = Depends(get_db)
     return new_product
 
 
-@router.get("/")
+@router.get("/", response_model=list[schemas.Product])
 def get_products(db: Session = Depends(get_db)):
 
     return db.query(models.Product).all()
 
 
-@router.get("/{product_id}")
+@router.get("/{product_id}", response_model=schemas.Product)
 def get_product(product_id: int, db: Session = Depends(get_db)):
 
     product = db.query(models.Product).filter(models.Product.id == product_id).first()
