@@ -23,3 +23,5 @@ class RestaurantResponse(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+    name: str
+    address: Optional[str] = None

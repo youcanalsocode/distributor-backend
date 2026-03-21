@@ -50,4 +50,9 @@ def login_restaurant(restaurant: RestaurantLogin, db: Session = Depends(get_db))
     access_token = create_access_token(
         data={"sub": db_restaurant.mobile}, expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token, 
+        "token_type": "bearer",
+        "name": db_restaurant.name,
+        "address": db_restaurant.address
+    }
