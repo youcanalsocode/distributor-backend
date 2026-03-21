@@ -9,5 +9,6 @@ class Category(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     description = Column(String)
+    image_url = Column(String)
 
     products = relationship("Product", back_populates="category")

@@ -14,6 +14,7 @@ class ProductBase(BaseModel):
 class CategoryBase(BaseModel):
     name: str
     description: Optional[str] = None
+    image_url: Optional[str] = None
 
 class CategoryCreate(CategoryBase):
     pass

@@ -1,5 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Form
 from sqlalchemy.orm import Session
+from typing import Optional
+import utils.file_utils as file_utils
 
 import models.product_model as models
 import schemas.product_schema as schemas
@@ -17,9 +19,29 @@ def get_db():
 
 
 @router.post("/", response_model=schemas.Product)
-def create_product(product: schemas.ProductCreate, db: Session = Depends(get_db)):
+async def create_product(
+    name: str = Form(...),
+    description: Optional[str] = Form(None),
+    price: float = Form(...),
+    stock: int = Form(...),
+    category_id: int = Form(...),
+    unit: Optional[str] = Form(None),
+    image: Optional[UploadFile] = File(None),
+    db: Session = Depends(get_db)
+):
+    image_url = None
+    if image:
+        image_url = file_utils.save_upload_file(image)
 
-    new_product = models.Product(**product.dict())
+    new_product = models.Product(
+        name=name,
+        description=description,
+        price=price,
+        stock=stock,
+        category_id=category_id,
+        unit=unit,
+        image_url=image_url
+    )
 
     db.add(new_product)
     db.commit()
@@ -46,15 +68,36 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{product_id}")
-def update_product(product_id: int, product: schemas.ProductCreate, db: Session = Depends(get_db)):
-
+async def update_product(
+    product_id: int,
+    name: str = Form(...),
+    description: Optional[str] = Form(None),
+    price: float = Form(...),
+    stock: int = Form(...),
+    category_id: int = Form(...),
+    unit: Optional[str] = Form(None),
+    image: Optional[UploadFile] = File(None),
+    db: Session = Depends(get_db)
+):
     existing_product = db.query(models.Product).filter(models.Product.id == product_id).first()
 
     if not existing_product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    for key, value in product.dict().items():
-        setattr(existing_product, key, value)
+    existing_product.name = name
+    existing_product.description = description
+    existing_product.price = price
+    existing_product.stock = stock
+    existing_product.category_id = category_id
+    existing_product.unit = unit
+
+    if image:
+        # Delete old image if it exists
+        if existing_product.image_url:
+            file_utils.delete_upload_file(existing_product.image_url)
+        
+        # Save new image
+        existing_product.image_url = file_utils.save_upload_file(image)
 
     db.commit()
     db.refresh(existing_product)
@@ -69,6 +112,10 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
 
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
+
+    # Delete image file if it exists
+    if product.image_url:
+        file_utils.delete_upload_file(product.image_url)
 
     db.delete(product)
     db.commit()
