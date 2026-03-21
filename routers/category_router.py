@@ -20,7 +20,7 @@ def get_db():
 
 
 # CREATE CATEGORY
-@router.post("/")
+@router.post("/", response_model=schemas.Category)
 async def create_category(
     name: str = Form(...),
     description: Optional[str] = Form(None),
@@ -52,8 +52,20 @@ def get_categories(db: Session = Depends(get_db)):
     return db.query(models.Category).all()
 
 
+# GET SINGLE CATEGORY
+@router.get("/{category_id}", response_model=schemas.Category)
+def get_category(category_id: int, db: Session = Depends(get_db)):
+
+    category = db.query(models.Category).filter(models.Category.id == category_id).first()
+
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+
+    return category
+
+
 # UPDATE CATEGORY
-@router.put("/{category_id}")
+@router.put("/{category_id}", response_model=schemas.Category)
 async def update_category(
     category_id: int,
     name: str = Form(...),
