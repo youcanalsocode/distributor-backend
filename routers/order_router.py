@@ -50,4 +50,7 @@ def get_all_orders(
     admin: bool = Depends(get_current_admin)
 ):
     orders = db.query(models.Order).all()
+    for order in orders:
+        if order.restaurant:
+            order.restaurant_name = order.restaurant.name
     return orders

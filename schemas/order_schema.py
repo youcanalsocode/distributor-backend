@@ -8,7 +8,7 @@ class OrderItemCreate(BaseModel):
     price: float
 
 class OrderCreate(BaseModel):
-    restaurant_id: int # Depending on if auth is enforced; keeping here for fallback
+    restaurant_id: Optional[int] = None # Depending on if auth is enforced; keeping here for fallback
     total_amount: float
     items: List[OrderItemCreate]
 
@@ -24,6 +24,7 @@ class OrderItemResponse(BaseModel):
 class OrderResponse(BaseModel):
     id: int
     restaurant_id: int
+    restaurant_name: Optional[str] = None
     total_amount: float
     status: str
     created_at: datetime
