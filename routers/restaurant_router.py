@@ -40,8 +40,11 @@ def register_restaurant(restaurant: RestaurantCreate, db: Session = Depends(get_
 @router.post("/login", response_model=Token)
 def login_restaurant(restaurant: RestaurantLogin, db: Session = Depends(get_db)):
     db_restaurant = db.query(Restaurant).filter(Restaurant.mobile == restaurant.mobile).first()
-    if not db_restaurant or not verify_password(restaurant.password, db_restaurant.password_hash):
-        raise HTTPException(status_code=401, detail="Incorrect mobile or password")
+    if not db_restaurant:
+        raise HTTPException(status_code=404, detail="User not registered")
+        
+    if not verify_password(restaurant.password, db_restaurant.password_hash):
+        raise HTTPException(status_code=401, detail="Incorrect password")
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
