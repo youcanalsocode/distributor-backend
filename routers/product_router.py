@@ -6,6 +6,7 @@ import utils.file_utils as file_utils
 import models.product_model as models
 import schemas.product_schema as schemas
 from database import SessionLocal
+from utils.dependencies import get_current_admin
 
 router = APIRouter(prefix="/products", tags=["Products"])
 
@@ -27,7 +28,8 @@ async def create_product(
     category_id: int = Form(...),
     unit: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: bool = Depends(get_current_admin)
 ):
     image_url = None
     if image:
@@ -77,7 +79,8 @@ async def update_product(
     category_id: int = Form(...),
     unit: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: bool = Depends(get_current_admin)
 ):
     existing_product = db.query(models.Product).filter(models.Product.id == product_id).first()
 
@@ -105,8 +108,13 @@ async def update_product(
     return existing_product
 
 
+# DELETE PRODUCT
 @router.delete("/{product_id}")
-def delete_product(product_id: int, db: Session = Depends(get_db)):
+def delete_product(
+    product_id: int, 
+    db: Session = Depends(get_db),
+    admin: bool = Depends(get_current_admin)
+):
 
     product = db.query(models.Product).filter(models.Product.id == product_id).first()
 

@@ -6,6 +6,7 @@ import utils.file_utils as file_utils
 import models.category_model as models
 import schemas.category_schema as schemas
 from database import SessionLocal
+from utils.dependencies import get_current_admin
 
 router = APIRouter(prefix="/categories", tags=["Categories"])
 
@@ -24,7 +25,8 @@ async def create_category(
     name: str = Form(...),
     description: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: bool = Depends(get_current_admin)
 ):
     image_url = None
     if image:
@@ -57,7 +59,8 @@ async def update_category(
     name: str = Form(...),
     description: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: bool = Depends(get_current_admin)
 ):
     existing_category = db.query(models.Category).filter(models.Category.id == category_id).first()
 
@@ -83,7 +86,11 @@ async def update_category(
 
 # DELETE CATEGORY
 @router.delete("/{category_id}")
-def delete_category(category_id: int, db: Session = Depends(get_db)):
+def delete_category(
+    category_id: int, 
+    db: Session = Depends(get_db),
+    admin: bool = Depends(get_current_admin)
+):
 
     category = db.query(models.Category).filter(models.Category.id == category_id).first()
 

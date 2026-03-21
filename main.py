@@ -4,9 +4,9 @@ from fastapi.staticfiles import StaticFiles
 import os
 
 from database import engine
-from models import category_model, product_model, restaurant_model
+from models import category_model, product_model, restaurant_model, admin_model, order_model
 
-from routers import category_router, product_router, restaurant_router
+from routers import category_router, product_router, restaurant_router, admin_router, order_router
 
 app = FastAPI()
 
@@ -27,7 +27,11 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 category_model.Base.metadata.create_all(bind=engine)
 product_model.Base.metadata.create_all(bind=engine)
 restaurant_model.Base.metadata.create_all(bind=engine)
+admin_model.Base.metadata.create_all(bind=engine)
+order_model.Base.metadata.create_all(bind=engine)
 
 app.include_router(category_router.router)
 app.include_router(product_router.router)
-app.include_router(restaurant_router.router)
+app.include_router(restaurant_router.router)
+app.include_router(admin_router.router)
+app.include_router(order_router.router)
