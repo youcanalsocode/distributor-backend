@@ -6,6 +6,8 @@ class RestaurantCreate(BaseModel):
     password: str
     name: str
     address: Optional[str] = None
+    security_question: str
+    security_answer: str
 
 class RestaurantLogin(BaseModel):
     mobile: str
@@ -25,3 +27,11 @@ class Token(BaseModel):
     token_type: str
     name: str
     address: Optional[str] = None
+
+class SecurityQuestionResponse(BaseModel):
+    security_question: str
+
+class ResetPasswordRequest(BaseModel):
+    mobile: str
+    security_answer: str
+    new_password: str

@@ -9,3 +9,5 @@ class Restaurant(Base):
     name = Column(String, nullable=False)
     address = Column(String)
     password_hash = Column(String, nullable=False)
+    security_question = Column(String, nullable=False)
+    security_answer = Column(String, nullable=False)
