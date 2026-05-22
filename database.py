@@ -1,11 +1,18 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from dotenv import load_dotenv
+import os
 
-DATABASE_URL = "postgresql+psycopg2://vimekrestomart:cjgP8llip6gRWIVDvAmdRv6jkmf2ZvtF@dpg-d889ereq1p3s73bs2pa0-a.oregon-postgres.render.com/vimekrestomart"
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 engine = create_engine(DATABASE_URL)
 
-SessionLocal = sessionmaker(bind=engine)
+SessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
 
 Base = declarative_base()
