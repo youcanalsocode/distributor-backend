@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
-
 from database import engine
 from models import category_model, product_model, restaurant_model, admin_model, order_model
 
@@ -12,7 +11,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -34,4 +33,4 @@ app.include_router(category_router.router)
 app.include_router(product_router.router)
 app.include_router(restaurant_router.router)
 app.include_router(admin_router.router)
-app.include_router(order_router.router)
+app.include_router(order_router.router)
